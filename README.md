@@ -36,3 +36,7 @@
 - مناسب جدًا لتعلم أساسيات البرمجة بلغة Java خاصة في إدارة البيانات.
 
 ## نموذج لمخرجات البرنامج
+--- Employee Management System ---
+1. Manage using ArrayList
+2. Manage using File
+3. Exit
