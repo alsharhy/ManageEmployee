@@ -1,0 +1,220 @@
+import java.io.*;
+import java.util.*;
+
+class Employee {
+    int id;
+    String name;
+    double salary;
+
+    public Employee(int id, String name, double salary) {
+        this.id = id;
+        this.name = name;
+        this.salary = salary;
+    }
+
+    public String toString() {
+        return id + "," + name + "," + salary;
+    }
+}
+
+public class EmployeeSystem {
+    static ArrayList<Employee> employees = new ArrayList<>();
+    static final String FILE_NAME = "employees.txt";
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int choice;
+
+        do {
+            System.out.println("\n--- نظام إدارة الموظفين ---");
+            System.out.println("1. التعامل باستخدام ArrayList");
+            System.out.println("2. التعامل باستخدام الملفات");
+            System.out.println("3. خروج");
+            System.out.print("اختر: ");
+            choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    handleArrayList(scanner);
+                    break;
+                case 2:
+                    handleFile(scanner);
+                    break;
+                case 3:
+                    System.out.println("تم الخروج.");
+                    break;
+                default:
+                    System.out.println("خيار غير صالح.");
+            }
+        } while (choice != 3);
+    }
+
+    // القسم الأول: باستخدام ArrayList
+    public static void handleArrayList(Scanner scanner) {
+        int option;
+        do {
+            System.out.println("\n-- التعامل مع ArrayList --");
+            System.out.println("1. إضافة موظف");
+            System.out.println("2. عرض الموظفين");
+            System.out.println("3. بحث عن موظف");
+            System.out.println("4. تعديل راتب موظف");
+            System.out.println("5. حذف موظف");
+            System.out.println("6. عودة");
+            System.out.print("اختر: ");
+            option = scanner.nextInt();
+
+            switch (option) {
+                case 1:
+                    addEmployee(scanner);
+                    break;
+                case 2:
+                    displayEmployees();
+                    break;
+                case 3:
+                    searchEmployee(scanner);
+                    break;
+                case 4:
+                    updateSalary(scanner);
+                    break;
+                case 5:
+                    deleteEmployee(scanner);
+                    break;
+                case 6:
+                    break;
+                default:
+                    System.out.println("خيار غير صالح.");
+            }
+        } while (option != 6);
+    }
+
+    public static void addEmployee(Scanner scanner) {
+        System.out.print("الرقم الوظيفي: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+        System.out.print("الاسم: ");
+        String name = scanner.nextLine();
+        System.out.print("الراتب: ");
+        double salary = scanner.nextDouble();
+        employees.add(new Employee(id, name, salary));
+        System.out.println("تمت الإضافة.");
+    }
+
+    public static void displayEmployees() {
+        if (employees.isEmpty()) {
+            System.out.println("لا يوجد موظفين.");
+        } else {
+            for (Employee e : employees) {
+                System.out.println("ID: " + e.id + ", الاسم: " + e.name + ", الراتب: " + e.salary);
+            }
+        }
+    }
+
+    public static void searchEmployee(Scanner scanner) {
+        System.out.print("أدخل الرقم الوظيفي للبحث: ");
+        int id = scanner.nextInt();
+        for (Employee e : employees) {
+            if (e.id == id) {
+                System.out.println("تم العثور على الموظف: " + e.name + ", الراتب: " + e.salary);
+                return;
+            }
+        }
+        System.out.println("الموظف غير موجود.");
+    }
+
+    public static void updateSalary(Scanner scanner) {
+        System.out.print("أدخل الرقم الوظيفي: ");
+        int id = scanner.nextInt();
+        for (Employee e : employees) {
+            if (e.id == id) {
+                System.out.print("أدخل الراتب الجديد: ");
+                e.salary = scanner.nextDouble();
+                System.out.println("تم التحديث.");
+                return;
+            }
+        }
+        System.out.println("الموظف غير موجود.");
+    }
+
+    public static void deleteEmployee(Scanner scanner) {
+        System.out.print("أدخل الرقم الوظيفي للحذف: ");
+        int id = scanner.nextInt();
+        Iterator<Employee> it = employees.iterator();
+        while (it.hasNext()) {
+            if (it.next().id == id) {
+                it.remove();
+                System.out.println("تم الحذف.");
+                return;
+            }
+        }
+        System.out.println("الموظف غير موجود.");
+    }
+
+    // القسم الثاني: التعامل مع الملف
+    public static void handleFile(Scanner scanner) {
+        int option;
+        do {
+            System.out.println("\n-- التعامل مع الملفات --");
+            System.out.println("1. حفظ البيانات في الملف");
+            System.out.println("2. تحميل البيانات من الملف");
+            System.out.println("3. عرض الموظفين من الملف");
+            System.out.println("4. عودة");
+            System.out.print("اختر: ");
+            option = scanner.nextInt();
+
+            switch (option) {
+                case 1:
+                    saveToFile();
+                    break;
+                case 2:
+                    loadFromFile();
+                    break;
+                case 3:
+                    displayFromFile();
+                    break;
+                case 4:
+                    break;
+                default:
+                    System.out.println("خيار غير صالح.");
+            }
+        } while (option != 4);
+    }
+
+    public static void saveToFile() {
+        try (FileWriter fw = new FileWriter(FILE_NAME)) {
+            for (Employee e : employees) {
+                fw.write(e.toString() + "\n");
+            }
+            System.out.println("تم حفظ البيانات.");
+        } catch (IOException e) {
+            System.out.println("خطأ أثناء الحفظ: " + e.getMessage());
+        }
+    }
+
+    public static void loadFromFile() {
+        employees.clear();
+        try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",");
+                int id = Integer.parseInt(data[0]);
+                String name = data[1];
+                double salary = Double.parseDouble(data[2]);
+                employees.add(new Employee(id, name, salary));
+            }
+            System.out.println("تم تحميل البيانات.");
+        } catch (IOException e) {
+            System.out.println("خطأ أثناء التحميل: " + e.getMessage());
+        }
+    }
+
+    public static void displayFromFile() {
+        try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                System.out.println(">> " + line);
+            }
+        } catch (IOException e) {
+            System.out.println("لا يمكن قراءة الملف: " + e.getMessage());
+        }
+    }
+}
